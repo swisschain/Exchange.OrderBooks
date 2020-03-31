@@ -12,7 +12,7 @@ namespace OrderBooks
     {
         private sealed class RemoteSettingsConfig
         {
-            public IReadOnlyCollection<string> RemoteSettingsUrls { get; set; } = Array.Empty<string>();
+            public IReadOnlyCollection<string> RemoteSettingsUrls { get; set; }
         }
 
         public static void Main(string[] args)
@@ -24,7 +24,7 @@ namespace OrderBooks
             using var loggerFactory = LogConfigurator.Configure(
                 "Exchange", 
                 ApplicationEnvironment.Config["SeqUrl"],
-                remoteSettingsConfig.RemoteSettingsUrls);
+                remoteSettingsConfig?.RemoteSettingsUrls ?? new string[]{} );
             
             var logger = loggerFactory.CreateLogger<Program>();
 
