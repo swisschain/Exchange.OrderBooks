@@ -37,18 +37,18 @@ namespace OrderBooks.Managers
                 var limitOrders = orderBook.Levels
                     .Select(level => new LimitOrder
                     {
-                        Id = level.OrderId,
-                        Price = level.Price,
-                        Volume = Math.Abs(level.Volume),
+                        Id = Guid.Parse(level.OrderId),
+                        Price = decimal.Parse(level.Price),
+                        Volume = Math.Abs(decimal.Parse(level.Volume)),
                         WalletId = level.WalletId,
                         Type = type
                     })
                     .ToList();
 
                 if (orderBook.IsBuy)
-                    _orderBooksHandler.HandleBuy(orderBook.AssetPairId, orderBook.Timestamp, limitOrders);
+                    _orderBooksHandler.HandleBuy(orderBook.Asset, orderBook.Timestamp.ToDateTime(), limitOrders);
                 else
-                    _orderBooksHandler.HandleSell(orderBook.AssetPairId, orderBook.Timestamp, limitOrders);
+                    _orderBooksHandler.HandleSell(orderBook.Asset, orderBook.Timestamp.ToDateTime(), limitOrders);
             }
 
             _orderBooksSubscriber.Start();

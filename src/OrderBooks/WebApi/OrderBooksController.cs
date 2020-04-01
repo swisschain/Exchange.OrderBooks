@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrderBooks.Common.Domain.Services;
 using OrderBooks.WebApi.Models.OrderBooks;
@@ -22,6 +23,7 @@ namespace OrderBooks.WebApi
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(OrderBookModel[]), StatusCodes.Status200OK)]
         public IActionResult GetAllAsync()
         {
             var orderBooks = _orderBooksService.GetAll();
@@ -32,9 +34,17 @@ namespace OrderBooks.WebApi
         }
 
         [HttpGet("{assetPairId}")]
+        [ProducesResponseType(typeof(OrderBookModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetByAssetPairIdAsync(string assetPairId)
         {
+            if (string.IsNullOrWhiteSpace(assetPairId))
+                return NotFound();
+
             var orderBook = _orderBooksService.GetByAssetPairId(assetPairId);
+
+            if (orderBook == null)
+                return NotFound();
 
             var model = _mapper.Map<OrderBookModel>(orderBook);
 
