@@ -13,6 +13,7 @@ namespace OrderBooks.Common.Services
         private readonly ConcurrentDictionary<string, string, OrderBookInfo> _dirtyOrderBooks =
             new ConcurrentDictionary<string, string, OrderBookInfo>();
 
+        // can be removed if OrderBookInfo properties are 'volatile'
         private readonly object _sync = new object();
 
         private readonly IOrderBooksService _orderBooksService;

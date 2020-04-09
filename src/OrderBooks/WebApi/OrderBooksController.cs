@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -6,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using OrderBooks.Common.Domain.Services;
 using OrderBooks.WebApi.Models.OrderBooks;
 using Swisschain.Sdk.Server.Authorization;
+using Swisschain.Sdk.Server.WebApi.Common;
+using Swisschain.Sdk.Server.WebApi.Pagination;
 
 namespace OrderBooks.WebApi
 {
@@ -24,22 +28,34 @@ namespace OrderBooks.WebApi
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(OrderBookModel[]), StatusCodes.Status200OK)]
-        public IActionResult GetAllAsync()
+        [ProducesResponseType(typeof(Paginated<OrderBookModel, string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ModelStateDictionaryErrorResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAllAsync([FromQuery] OrderBookRequestMany request)
         {
+            if (request.Limit > 1000)
+            {
+                ModelState.AddModelError($"{nameof(request.Limit)}", "Should not be more than 1000");
+
+                return BadRequest(ModelState);
+            }
+
+            var sortOrder = request.Order == PaginationOrder.Asc
+                ? ListSortDirection.Ascending
+                : ListSortDirection.Descending;
+
             var brokerId = User.GetTenantId();
 
-            var orderBooks = _orderBooksService.GetAll(brokerId);
+            var accounts = _orderBooksService.GetAllAsync(brokerId, request.AssetPairId, sortOrder, request.Cursor, request.Limit);
 
-            var model = _mapper.Map<List<OrderBookModel>>(orderBooks);
+            var result = _mapper.Map<OrderBookModel[]>(accounts);
 
-            return Ok(model);
+            return Ok(result.Paginate(request, Url, x => x.AssetPairId));
         }
 
         [HttpGet("{assetPairId}")]
         [ProducesResponseType(typeof(OrderBookModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetByAssetPairIdAsync(string assetPairId)
+        public IActionResult GetAsync(string assetPairId)
         {
             if (string.IsNullOrWhiteSpace(assetPairId))
                 return NotFound();

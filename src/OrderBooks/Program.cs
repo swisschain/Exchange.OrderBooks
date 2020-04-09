@@ -22,8 +22,7 @@ namespace OrderBooks
             var remoteSettingsConfig = ApplicationEnvironment.Config.Get<RemoteSettingsConfig>();
 
             using var loggerFactory = LogConfigurator.Configure(
-                "Exchange", 
-                ApplicationEnvironment.Config["SeqUrl"],
+                "Exchange",
                 remoteSettingsConfig?.RemoteSettingsUrls ?? new string[]{} );
             
             var logger = loggerFactory.CreateLogger<Program>();
