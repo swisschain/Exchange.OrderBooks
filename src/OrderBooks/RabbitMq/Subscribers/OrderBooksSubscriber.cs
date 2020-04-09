@@ -66,6 +66,7 @@ namespace OrderBooks.RabbitMq.Subscribers
         {
             try
             {
+                var brokerId = message.OrderBook.BrokerId;
                 var assetPairId = message.OrderBook.Asset;
                 var timestamp = message.OrderBook.Timestamp.ToDateTime();
                 var limitOrders = message.OrderBook.Levels
@@ -81,10 +82,7 @@ namespace OrderBooks.RabbitMq.Subscribers
                     })
                     .ToList();
 
-                if (message.OrderBook.IsBuy)
-                    _orderBooksHandler.HandleBuy(assetPairId, timestamp, limitOrders);
-                else
-                    _orderBooksHandler.HandleSell(assetPairId, timestamp, limitOrders);
+                _orderBooksHandler.Handle(brokerId, assetPairId, message.OrderBook.IsBuy, timestamp, limitOrders);
             }
             catch (Exception exception)
             {

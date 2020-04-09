@@ -4,15 +4,16 @@ using System.Linq;
 using OrderBooks.Common.Domain.Entities;
 using OrderBooks.Common.Domain.Handlers;
 using OrderBooks.Common.Domain.Services;
+using OrderBooks.Common.Utils;
 
 namespace OrderBooks.Common.Services
 {
     public class OrderBooksHandler : IOrderBooksHandler
     {
-        private readonly object _sync = new object();
+        private readonly ConcurrentDictionary<string, string, OrderBookInfo> _dirtyOrderBooks =
+            new ConcurrentDictionary<string, string, OrderBookInfo>();
 
-        private readonly Dictionary<string, OrderBookInfo> _dirtyOrderBooks =
-            new Dictionary<string, OrderBookInfo>();
+        private readonly object _sync = new object();
 
         private readonly IOrderBooksService _orderBooksService;
 
@@ -21,51 +22,42 @@ namespace OrderBooks.Common.Services
             _orderBooksService = orderBooksService;
         }
 
-        public void HandleSell(string assetPairId, DateTime timestamp, IReadOnlyList<LimitOrder> limitOrders)
+        public void Handle(string brokerId, string assetPairId, bool isBuy, DateTime timestamp, IReadOnlyList<LimitOrder> limitOrders)
         {
             lock (_sync)
             {
-                if (!_dirtyOrderBooks.TryGetValue(assetPairId, out var orderBookInfo))
+                var existed = _dirtyOrderBooks.Get(brokerId, assetPairId);
+
+                if (existed != null)
                 {
-                    _dirtyOrderBooks.Add(assetPairId,
-                        new OrderBookInfo
-                        {
-                            AssetPairId = assetPairId, Timestamp = timestamp, SellLimitOrders = limitOrders
-                        });
+                    existed.Timestamp = timestamp;
+
+                    if (isBuy)
+                        existed.BuyLimitOrders = limitOrders;
+                    else
+                        existed.SellLimitOrders = limitOrders;
+
+                    UpdateInOrderBookService(brokerId, existed);
                 }
                 else
                 {
-                    orderBookInfo.Timestamp = timestamp;
-                    orderBookInfo.SellLimitOrders = limitOrders;
+                    var newOrderBookInfo = new OrderBookInfo
+                    {
+                        AssetPairId = assetPairId,
+                        Timestamp = timestamp
+                    };
 
-                    Handle(orderBookInfo);
+                    if (isBuy)
+                        newOrderBookInfo.BuyLimitOrders = limitOrders;
+                    else
+                        newOrderBookInfo.SellLimitOrders = limitOrders;
+
+                    _dirtyOrderBooks.Update(brokerId, assetPairId, newOrderBookInfo);
                 }
             }
         }
 
-        public void HandleBuy(string assetPairId, DateTime timestamp, IReadOnlyList<LimitOrder> limitOrders)
-        {
-            lock (_sync)
-            {
-                if (!_dirtyOrderBooks.TryGetValue(assetPairId, out var orderBookInfo))
-                {
-                    _dirtyOrderBooks.Add(assetPairId,
-                        new OrderBookInfo
-                        {
-                            AssetPairId = assetPairId, Timestamp = timestamp, BuyLimitOrders = limitOrders
-                        });
-                }
-                else
-                {
-                    orderBookInfo.Timestamp = timestamp;
-                    orderBookInfo.BuyLimitOrders = limitOrders;
-
-                    Handle(orderBookInfo);
-                }
-            }
-        }
-
-        private void Handle(OrderBookInfo orderBookInfo)
+        private void UpdateInOrderBookService(string brokerId, OrderBookInfo orderBookInfo)
         {
             if (orderBookInfo.SellLimitOrders != null && orderBookInfo.BuyLimitOrders != null)
             {
@@ -79,7 +71,7 @@ namespace OrderBooks.Common.Services
 
                 if (isValid)
                 {
-                    _orderBooksService.Update(new OrderBook
+                    _orderBooksService.Update(brokerId, new OrderBook
                     {
                         AssetPairId = orderBookInfo.AssetPairId,
                         Timestamp = orderBookInfo.Timestamp,

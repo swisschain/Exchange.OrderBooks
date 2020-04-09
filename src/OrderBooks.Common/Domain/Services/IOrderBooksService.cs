@@ -5,10 +5,10 @@ namespace OrderBooks.Common.Domain.Services
 {
     public interface IOrderBooksService
     {
-        IReadOnlyList<OrderBook> GetAll();
+        IReadOnlyList<OrderBook> GetAll(string brokerId);
 
-        OrderBook GetByAssetPairId(string assetPairId);
+        OrderBook Get(string brokerId, string assetPairId);
 
-        void Update(OrderBook orderBook);
+        void Update(string brokerId, OrderBook orderBook);
     }
 }

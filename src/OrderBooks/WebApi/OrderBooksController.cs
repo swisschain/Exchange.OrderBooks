@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrderBooks.Common.Domain.Services;
 using OrderBooks.WebApi.Models.OrderBooks;
+using Swisschain.Sdk.Server.Authorization;
 
 namespace OrderBooks.WebApi
 {
@@ -26,7 +27,9 @@ namespace OrderBooks.WebApi
         [ProducesResponseType(typeof(OrderBookModel[]), StatusCodes.Status200OK)]
         public IActionResult GetAllAsync()
         {
-            var orderBooks = _orderBooksService.GetAll();
+            var brokerId = User.GetTenantId();
+
+            var orderBooks = _orderBooksService.GetAll(brokerId);
 
             var model = _mapper.Map<List<OrderBookModel>>(orderBooks);
 
@@ -41,7 +44,9 @@ namespace OrderBooks.WebApi
             if (string.IsNullOrWhiteSpace(assetPairId))
                 return NotFound();
 
-            var orderBook = _orderBooksService.GetByAssetPairId(assetPairId);
+            var brokerId = User.GetTenantId();
+
+            var orderBook = _orderBooksService.Get(brokerId, assetPairId);
 
             if (orderBook == null)
                 return NotFound();

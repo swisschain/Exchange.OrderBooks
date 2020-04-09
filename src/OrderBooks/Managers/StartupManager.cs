@@ -45,10 +45,7 @@ namespace OrderBooks.Managers
                     })
                     .ToList();
 
-                if (orderBook.IsBuy)
-                    _orderBooksHandler.HandleBuy(orderBook.Asset, orderBook.Timestamp.ToDateTime(), limitOrders);
-                else
-                    _orderBooksHandler.HandleSell(orderBook.Asset, orderBook.Timestamp.ToDateTime(), limitOrders);
+                _orderBooksHandler.Handle(orderBook.BrokerId, orderBook.Asset, orderBook.IsBuy, orderBook.Timestamp.ToDateTime(), limitOrders);
             }
 
             _orderBooksSubscriber.Start();

@@ -1,31 +1,31 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using OrderBooks.Common.Domain.Entities;
 using OrderBooks.Common.Domain.Services;
+using OrderBooks.Common.Utils;
 
 namespace OrderBooks.Common.Services
 {
     public class OrderBooksService : IOrderBooksService
     {
-        private readonly ConcurrentDictionary<string, OrderBook> _orderBooks =
-            new ConcurrentDictionary<string, OrderBook>();
-        
-        public IReadOnlyList<OrderBook> GetAll()
+        // nested dictionaries with two keys - BrokerId, AssetPairId
+        private readonly ConcurrentDictionary<string, string, OrderBook> _orderBooks =
+            new ConcurrentDictionary<string, string, OrderBook>();
+
+        public IReadOnlyList<OrderBook> GetAll(string brokerId)
         {
-            return _orderBooks.Values.ToList();
+            return _orderBooks.GetAll(brokerId);
         }
 
-        public OrderBook GetByAssetPairId(string assetPairId)
+        public OrderBook Get(string brokerId, string assetPairId)
         {
-            _orderBooks.TryGetValue(assetPairId, out var orderBook);
-
-            return orderBook;
+            return _orderBooks.Get(brokerId, assetPairId);
         }
         
-        public void Update(OrderBook orderBook)
+        public void Update(string brokerId, OrderBook orderBook)
         {
-            _orderBooks.AddOrUpdate(orderBook.AssetPairId, orderBook, (key, value) => orderBook);
+            var assetPairId = orderBook.AssetPairId;
+
+            _orderBooks.Update(brokerId, assetPairId, orderBook);
         }
     }
 }
