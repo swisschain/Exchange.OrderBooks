@@ -9,9 +9,9 @@ namespace OrderBooks.WebApi.Models.OrderBooks
     public class OrderBookModel
     {
         /// <summary>
-        /// The asset pair identifier.
+        /// The asset pair symbol.
         /// </summary>
-        public string AssetPairId { get; set; }
+        public string Symbol { get; set; }
 
         /// <summary>
         /// The date and time of creation.

@@ -5,8 +5,8 @@ namespace OrderBooks.WebApi.Models.OrderBooks
     public class OrderBookRequestMany : PaginationRequest<string>
     {
         /// <summary>
-        /// Asset pair identifier
+        /// Asset pair symbol
         /// </summary>
-        public string AssetPairId { get; set; }
+        public string Symbol { get; set; }
     }
 }

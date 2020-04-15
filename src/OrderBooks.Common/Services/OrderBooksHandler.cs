@@ -23,11 +23,11 @@ namespace OrderBooks.Common.Services
             _orderBooksService = orderBooksService;
         }
 
-        public void Handle(string brokerId, string assetPairId, bool isBuy, DateTime timestamp, IReadOnlyList<LimitOrder> limitOrders)
+        public void Handle(string brokerId, string symbol, bool isBuy, DateTime timestamp, IReadOnlyList<LimitOrder> limitOrders)
         {
             lock (_sync)
             {
-                var existed = _dirtyOrderBooks.Get(brokerId, assetPairId);
+                var existed = _dirtyOrderBooks.Get(brokerId, symbol);
 
                 if (existed != null)
                 {
@@ -44,7 +44,7 @@ namespace OrderBooks.Common.Services
                 {
                     var newOrderBookInfo = new OrderBookInfo
                     {
-                        AssetPairId = assetPairId,
+                        Symbol = symbol,
                         Timestamp = timestamp
                     };
 
@@ -53,7 +53,7 @@ namespace OrderBooks.Common.Services
                     else
                         newOrderBookInfo.SellLimitOrders = limitOrders;
 
-                    _dirtyOrderBooks.Update(brokerId, assetPairId, newOrderBookInfo);
+                    _dirtyOrderBooks.Update(brokerId, symbol, newOrderBookInfo);
                 }
             }
         }
@@ -74,7 +74,7 @@ namespace OrderBooks.Common.Services
                 {
                     _orderBooksService.Update(brokerId, new OrderBook
                     {
-                        AssetPairId = orderBookInfo.AssetPairId,
+                        Symbol = orderBookInfo.Symbol,
                         Timestamp = orderBookInfo.Timestamp,
                         LimitOrders = orderBookInfo.SellLimitOrders
                             .OrderByDescending(o => o.Price)
@@ -87,7 +87,7 @@ namespace OrderBooks.Common.Services
 
         private class OrderBookInfo
         {
-            public string AssetPairId { get; set; }
+            public string Symbol { get; set; }
 
             public DateTime Timestamp { get; set; }
 

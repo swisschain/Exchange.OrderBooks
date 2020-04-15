@@ -45,24 +45,24 @@ namespace OrderBooks.WebApi
 
             var brokerId = User.GetTenantId();
 
-            var accounts = _orderBooksService.GetAllAsync(brokerId, request.AssetPairId, sortOrder, request.Cursor, request.Limit);
+            var accounts = _orderBooksService.GetAllAsync(brokerId, request.Symbol, sortOrder, request.Cursor, request.Limit);
 
             var result = _mapper.Map<OrderBookModel[]>(accounts);
 
-            return Ok(result.Paginate(request, Url, x => x.AssetPairId));
+            return Ok(result.Paginate(request, Url, x => x.Symbol));
         }
 
-        [HttpGet("{assetPairId}")]
+        [HttpGet("{symbol}")]
         [ProducesResponseType(typeof(OrderBookModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetAsync(string assetPairId)
+        public IActionResult GetAsync(string symbol)
         {
-            if (string.IsNullOrWhiteSpace(assetPairId))
+            if (string.IsNullOrWhiteSpace(symbol))
                 return NotFound();
 
             var brokerId = User.GetTenantId();
 
-            var orderBook = _orderBooksService.Get(brokerId, assetPairId);
+            var orderBook = _orderBooksService.Get(brokerId, symbol);
 
             if (orderBook == null)
                 return NotFound();

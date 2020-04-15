@@ -8,10 +8,10 @@ namespace OrderBooks.Common.Domain.Services
     {
         IReadOnlyList<OrderBook> GetAll(string brokerId);
 
-        IReadOnlyList<OrderBook> GetAllAsync(string brokerId, string assetPairId,
+        IReadOnlyList<OrderBook> GetAllAsync(string brokerId, string symbol,
             ListSortDirection sortOrder = ListSortDirection.Ascending, string cursor = null, int limit = 50);
 
-        OrderBook Get(string brokerId, string assetPairId);
+        OrderBook Get(string brokerId, string symbol);
 
         void Update(string brokerId, OrderBook orderBook);
     }

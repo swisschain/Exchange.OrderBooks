@@ -10,7 +10,7 @@ namespace OrderBooks.Common.Services
 {
     public class OrderBooksService : IOrderBooksService
     {
-        // nested dictionaries with two keys - BrokerId, AssetPairId
+        // nested dictionaries with two keys - BrokerId, Symbol
         private readonly ConcurrentDictionary<string, string, OrderBook> _orderBooks =
             new ConcurrentDictionary<string, string, OrderBook>();
 
@@ -19,27 +19,27 @@ namespace OrderBooks.Common.Services
             return _orderBooks.GetAll(brokerId);
         }
 
-        public OrderBook Get(string brokerId, string assetPairId)
+        public OrderBook Get(string brokerId, string symbol)
         {
-            return _orderBooks.Get(brokerId, assetPairId);
+            return _orderBooks.Get(brokerId, symbol);
         }
         
         public void Update(string brokerId, OrderBook orderBook)
         {
-            var assetPairId = orderBook.AssetPairId;
+            var symbol = orderBook.Symbol;
 
-            _orderBooks.Update(brokerId, assetPairId, orderBook);
+            _orderBooks.Update(brokerId, symbol, orderBook);
         }
 
-        public IReadOnlyList<OrderBook> GetAllAsync(string brokerId, string assetPairId,
+        public IReadOnlyList<OrderBook> GetAllAsync(string brokerId, string symbol,
             ListSortDirection sortOrder = ListSortDirection.Ascending, string cursor = null, int limit = 50)
         {
-            if (string.IsNullOrWhiteSpace(assetPairId))
+            if (string.IsNullOrWhiteSpace(symbol))
                 return new List<OrderBook>();
 
             var brokersAllDict = _orderBooks[brokerId];
 
-            var requiredKeys = brokersAllDict.Keys.Where(x => x.Contains(assetPairId)).ToList();
+            var requiredKeys = brokersAllDict.Keys.Where(x => x.Contains(symbol)).ToList();
 
             var filteredOrderBooks = new List<OrderBook>();
 
@@ -50,16 +50,16 @@ namespace OrderBooks.Common.Services
             if (sortOrder == ListSortDirection.Ascending)
             {
                 if (cursor != null)
-                    query = query.Where(x => string.Compare(x.AssetPairId, cursor, StringComparison.CurrentCultureIgnoreCase) >= 0);
+                    query = query.Where(x => string.Compare(x.Symbol, cursor, StringComparison.CurrentCultureIgnoreCase) >= 0);
 
-                query = query.OrderBy(x => x.AssetPairId);
+                query = query.OrderBy(x => x.Symbol);
             }
             else
             {
                 if (cursor != null)
-                    query = query.Where(x => string.Compare(x.AssetPairId, cursor, StringComparison.CurrentCultureIgnoreCase) < 0);
+                    query = query.Where(x => string.Compare(x.Symbol, cursor, StringComparison.CurrentCultureIgnoreCase) < 0);
 
-                query = query.OrderByDescending(x => x.AssetPairId);
+                query = query.OrderByDescending(x => x.Symbol);
             }
 
             query = query.Take(limit);
