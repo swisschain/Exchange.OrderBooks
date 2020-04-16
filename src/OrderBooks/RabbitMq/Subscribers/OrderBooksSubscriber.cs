@@ -83,11 +83,12 @@ namespace OrderBooks.RabbitMq.Subscribers
                     .ToList();
 
                 _orderBooksHandler.Handle(brokerId, symbol, message.OrderBook.IsBuy, timestamp, limitOrders);
+
+                _logger.LogInformation("Received an Order Book. {@OrderBook}", message);
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "An error occurred during processing order book. {@Message}",
-                    message);
+                _logger.LogError(exception, "An error occurred during processing order book. {@Message}",  message);
             }
 
             return Task.CompletedTask;
