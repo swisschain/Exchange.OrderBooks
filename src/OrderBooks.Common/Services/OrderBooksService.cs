@@ -34,18 +34,12 @@ namespace OrderBooks.Common.Services
         public IReadOnlyList<OrderBook> GetAllAsync(string brokerId, string symbol,
             ListSortDirection sortOrder = ListSortDirection.Ascending, string cursor = null, int limit = 50)
         {
-            if (string.IsNullOrWhiteSpace(symbol))
-                return new List<OrderBook>();
+            var allOrderBooks = _orderBooks.GetAll(brokerId);
 
-            var brokersAllDict = _orderBooks[brokerId];
+            IEnumerable<OrderBook> query = allOrderBooks;
 
-            var requiredKeys = brokersAllDict.Keys.Where(x => x.Contains(symbol)).ToList();
-
-            var filteredOrderBooks = new List<OrderBook>();
-
-            requiredKeys.ForEach(key => filteredOrderBooks.Add(brokersAllDict[key]));
-
-            IEnumerable<OrderBook> query = filteredOrderBooks;
+            if (!string.IsNullOrWhiteSpace(symbol))
+                query = query.Where(x => x.Symbol.Contains(symbol));
 
             if (sortOrder == ListSortDirection.Ascending)
             {

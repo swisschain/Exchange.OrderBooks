@@ -7,7 +7,6 @@ namespace OrderBooks.Common.Utils
     public class ConcurrentDictionary<TFirstKey, TSecondKey, TValue> : ConcurrentDictionary<TFirstKey, ConcurrentDictionary<TSecondKey, TValue>>
         where TValue : class
     {
-
         public IReadOnlyList<TValue> GetAll(TFirstKey firstKey)
         {
             if (TryGetValue(firstKey, out var secondKeysValues))
