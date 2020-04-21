@@ -32,13 +32,6 @@ namespace OrderBooks.WebApi
         [ProducesResponseType(typeof(ModelStateDictionaryErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllAsync([FromQuery] OrderBookRequestMany request)
         {
-            if (request.Limit > 1000)
-            {
-                ModelState.AddModelError($"{nameof(request.Limit)}", "Should not be more than 1000");
-
-                return BadRequest(ModelState);
-            }
-
             var sortOrder = request.Order == PaginationOrder.Asc
                 ? ListSortDirection.Ascending
                 : ListSortDirection.Descending;
