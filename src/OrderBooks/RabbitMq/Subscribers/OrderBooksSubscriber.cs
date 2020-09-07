@@ -36,9 +36,9 @@ namespace OrderBooks.RabbitMq.Subscribers
             {
                 ConnectionString = _settings.ConnectionString,
                 ExchangeName = _settings.Exchange,
-                QueueName = $"{_settings.Exchange}.{_settings.QueueSuffix}.11",
+                QueueName = $"{_settings.Exchange}.{_settings.QueueSuffix}",
                 DeadLetterExchangeName = null,
-                IsDurable = true
+                IsDurable = false
             };
 
             _subscriber = new RabbitMqSubscriber<OrderBookSnapshotEvent>(LegacyLykkeLogFactoryToConsole.Instance,

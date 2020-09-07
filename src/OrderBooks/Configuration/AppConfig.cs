@@ -8,5 +8,7 @@ namespace OrderBooks.Configuration
         public OrderBooksServiceSettings OrderBooksService { get; set; }
 
         public JwtConfig Jwt { get; set; }
+
+        public MyNoSqlConfig MyNoSqlServer { get; set; }
     }
 }

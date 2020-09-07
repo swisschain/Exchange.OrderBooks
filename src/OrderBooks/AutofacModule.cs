@@ -37,7 +37,7 @@ namespace OrderBooks
 
             builder.Register(ctx =>
                 {
-                    return new MyNoSqlServer.DataWriter.MyNoSqlServerDataWriter<OrderBookEntity>(() => _config.OrderBooksService.MyNoSqlServer.WriterServiceUrl,
+                    return new MyNoSqlServer.DataWriter.MyNoSqlServerDataWriter<OrderBookEntity>(() => _config.MyNoSqlServer.WriterServiceUrl,
                         OrderBookEntity.OrderBookTableName);
                 })
                 .As<IMyNoSqlServerDataWriter<OrderBookEntity>>()
@@ -45,7 +45,7 @@ namespace OrderBooks
 
             builder.Register(ctx =>
                 {
-                    return new MyNoSqlServer.DataWriter.MyNoSqlServerDataWriter<PriceEntity>(() => _config.OrderBooksService.MyNoSqlServer.WriterServiceUrl,
+                    return new MyNoSqlServer.DataWriter.MyNoSqlServerDataWriter<PriceEntity>(() => _config.MyNoSqlServer.WriterServiceUrl,
                         PriceEntity.PriceTableName);
                 })
                 .As<IMyNoSqlServerDataWriter<PriceEntity>>()
