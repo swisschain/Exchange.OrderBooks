@@ -36,7 +36,7 @@ namespace OrderBooks.RabbitMq.Subscribers
             {
                 ConnectionString = _settings.ConnectionString,
                 ExchangeName = _settings.Exchange,
-                QueueName = $"{_settings.Exchange}.{_settings.QueueSuffix}",
+                QueueName = $"{_settings.Exchange}.{_settings.QueueSuffix}-22",
                 DeadLetterExchangeName = null,
                 IsDurable = false
             };

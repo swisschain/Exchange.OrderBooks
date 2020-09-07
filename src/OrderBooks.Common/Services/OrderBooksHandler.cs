@@ -41,6 +41,7 @@ namespace OrderBooks.Common.Services
                         existed.SellLimitOrders = limitOrders;
 
                     UpdateInOrderBookService(brokerId, existed);
+                    UpdateInPricingService(brokerId, existed);
                 }
                 else
                 {
@@ -56,6 +57,12 @@ namespace OrderBooks.Common.Services
                         newOrderBookInfo.SellLimitOrders = limitOrders;
 
                     _dirtyOrderBooks.Update(brokerId, symbol, newOrderBookInfo);
+
+
+                    //todo: на инициализации надо сделать подругому - не надо записыват в кеш промежуточные данные, надо пройти всю инициализацию и тока потом записать в кеш все
+                    // да и вообще надо отказаться от локального кеша и исползовать тока mynosql
+                    UpdateInOrderBookService(brokerId, newOrderBookInfo);
+                    UpdateInPricingService(brokerId, newOrderBookInfo);
                 }
             }
         }
