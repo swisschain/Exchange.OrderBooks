@@ -65,4 +65,53 @@ namespace OrderBooks.WebApi
             return Ok(model);
         }
     }
+
+
+    [ApiController]
+    [Route("api/order-books-pub")]
+    public class OrderBooksPubController : ControllerBase
+    {
+        private readonly IOrderBooksService _orderBooksService;
+        private readonly IMapper _mapper;
+
+        public OrderBooksPubController(IOrderBooksService orderBooksService, IMapper mapper)
+        {
+            _orderBooksService = orderBooksService;
+            _mapper = mapper;
+        }
+
+        [HttpGet("{brokerId}")]
+        [ProducesResponseType(typeof(Paginated<OrderBookModel, string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ModelStateDictionaryErrorResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAllAsync([FromQuery] OrderBookRequestMany request, [FromRoute] string brokerId)
+        {
+            var sortOrder = request.Order == PaginationOrder.Asc
+                ? ListSortDirection.Ascending
+                : ListSortDirection.Descending;
+
+            var accounts = _orderBooksService.GetAllAsync(brokerId, request.Symbol, sortOrder, request.Cursor, request.Limit);
+
+            var result = _mapper.Map<OrderBookModel[]>(accounts);
+
+            return Ok(result.Paginate(request, Url, x => x.Symbol));
+        }
+
+        [HttpGet("{brokerId}/{symbol}")]
+        [ProducesResponseType(typeof(OrderBookModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetAsync([FromRoute] string symbol, [FromRoute] string brokerId)
+        {
+            if (string.IsNullOrWhiteSpace(symbol))
+                return NotFound();
+
+            var orderBook = _orderBooksService.Get(brokerId, symbol);
+
+            if (orderBook == null)
+                return NotFound();
+
+            var model = _mapper.Map<OrderBookModel>(orderBook);
+
+            return Ok(model);
+        }
+    }
 }

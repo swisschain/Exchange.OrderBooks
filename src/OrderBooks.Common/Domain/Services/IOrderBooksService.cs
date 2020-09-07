@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using OrderBooks.Common.Domain.Entities;
+using OrderBooks.MyNoSql;
+using OrderBooks.MyNoSql.OrderBookData;
 
 namespace OrderBooks.Common.Domain.Services
 {

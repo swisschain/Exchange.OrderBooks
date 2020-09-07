@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using OrderBooks.Common.Domain.Entities;
+using OrderBooks.MyNoSql.OrderBookData;
 
 namespace OrderBooks.Common.Domain.Handlers
 {

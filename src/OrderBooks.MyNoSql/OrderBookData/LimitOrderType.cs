@@ -1,4 +1,4 @@
-﻿namespace OrderBooks.Common.Domain.Entities
+﻿namespace OrderBooks.MyNoSql.OrderBookData
 {
     /// <summary>
     /// Specifies a limit order type.

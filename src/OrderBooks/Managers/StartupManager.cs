@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using MatchingEngine.Client;
-using OrderBooks.Common.Domain.Entities;
 using OrderBooks.Common.Domain.Handlers;
 using OrderBooks.RabbitMq.Subscribers;
 
@@ -31,11 +30,11 @@ namespace OrderBooks.Managers
             foreach (var orderBook in orderBooks)
             {
                 var type = orderBook.IsBuy
-                    ? LimitOrderType.Buy
-                    : LimitOrderType.Sell;
+                    ? MyNoSql.OrderBookData.LimitOrderType.Buy
+                    : MyNoSql.OrderBookData.LimitOrderType.Sell;
 
                 var limitOrders = orderBook.Levels
-                    .Select(level => new LimitOrder
+                    .Select(level => new MyNoSql.OrderBookData.LimitOrder
                     {
                         Id = Guid.Parse(level.OrderId),
                         Price = decimal.Parse(level.Price),

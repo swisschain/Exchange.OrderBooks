@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using OrderBooks.Common.Domain.Entities;
+using OrderBooks.MyNoSql.OrderBookData;
 using OrderBooks.WebApi.Models.OrderBooks;
 
 namespace OrderBooks

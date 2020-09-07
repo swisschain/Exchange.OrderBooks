@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Swisschain.Exchange.OrderBooks</AssemblyName>
     <UserSecretsId>a4b463d8-a130-47ad-8c15-ea7d9d89f7f6</UserSecretsId>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,6 +30,7 @@
     <PackageReference Include="Swisschain.LykkeLog.Adapter" Version="1.1.0" />
     <PackageReference Include="Swisschain.MatchingEngine.Client" Version="2.0.1" />
     <PackageReference Include="Swisschain.RabbitMqBroker" Version="8.2.0" />
+    <PackageReference Include="MyNoSqlServer.DataWriter" Version="1.2.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrderBooks.Common\OrderBooks.Common.csproj" />
+    <ProjectReference Include="..\OrderBooks.MyNoSql\OrderBooks.MyNoSql.csproj" />
   </ItemGroup>
 
   <ItemGroup>

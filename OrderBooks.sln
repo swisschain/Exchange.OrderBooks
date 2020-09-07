@@ -42,6 +42,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", 
 		deployment\kubernetes\readme.md = deployment\kubernetes\readme.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderBooks.MyNoSql", "src\OrderBooks.MyNoSql\OrderBooks.MyNoSql.csproj", "{DFC4B8F2-B497-4062-86FA-F8147B5636FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{2BFF98C7-1714-4000-A468-DBD9C24E7B02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BFF98C7-1714-4000-A468-DBD9C24E7B02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BFF98C7-1714-4000-A468-DBD9C24E7B02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFC4B8F2-B497-4062-86FA-F8147B5636FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFC4B8F2-B497-4062-86FA-F8147B5636FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFC4B8F2-B497-4062-86FA-F8147B5636FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFC4B8F2-B497-4062-86FA-F8147B5636FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

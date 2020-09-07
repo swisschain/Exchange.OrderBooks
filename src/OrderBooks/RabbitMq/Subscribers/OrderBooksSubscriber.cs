@@ -5,9 +5,9 @@ using Lykke.RabbitMqBroker;
 using Lykke.RabbitMqBroker.Subscriber;
 using MatchingEngine.Client.Contracts.Outgoing;
 using Microsoft.Extensions.Logging;
-using OrderBooks.Common.Domain.Entities;
 using OrderBooks.Common.Domain.Handlers;
 using OrderBooks.Configuration.Service.RabbitMq.Subscribers;
+using OrderBooks.MyNoSql.OrderBookData;
 using Swisschain.LykkeLog.Adapter;
 
 namespace OrderBooks.RabbitMq.Subscribers
@@ -36,9 +36,9 @@ namespace OrderBooks.RabbitMq.Subscribers
             {
                 ConnectionString = _settings.ConnectionString,
                 ExchangeName = _settings.Exchange,
-                QueueName = $"{_settings.Exchange}.{_settings.QueueSuffix}",
+                QueueName = $"{_settings.Exchange}.{_settings.QueueSuffix}.11",
                 DeadLetterExchangeName = null,
-                IsDurable = false
+                IsDurable = true
             };
 
             _subscriber = new RabbitMqSubscriber<OrderBookSnapshotEvent>(LegacyLykkeLogFactoryToConsole.Instance,

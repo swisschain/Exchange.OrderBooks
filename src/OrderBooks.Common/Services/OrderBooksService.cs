@@ -2,17 +2,26 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using OrderBooks.Common.Domain.Entities;
+using MyNoSqlServer.Abstractions;
 using OrderBooks.Common.Domain.Services;
 using OrderBooks.Common.Utils;
+using OrderBooks.MyNoSql;
+using OrderBooks.MyNoSql.OrderBookData;
 
 namespace OrderBooks.Common.Services
 {
     public class OrderBooksService : IOrderBooksService
     {
+        private readonly IMyNoSqlServerDataWriter<OrderBookEntity> _dataWriter;
+
         // nested dictionaries with two keys - BrokerId, Symbol
         private readonly ConcurrentDictionary<string, string, OrderBook> _orderBooks =
             new ConcurrentDictionary<string, string, OrderBook>();
+
+        public OrderBooksService(IMyNoSqlServerDataWriter<OrderBookEntity> dataWriter)
+        {
+            _dataWriter = dataWriter;
+        }
 
         public IReadOnlyList<OrderBook> GetAll(string brokerId)
         {
@@ -29,6 +38,11 @@ namespace OrderBooks.Common.Services
             var symbol = orderBook.Symbol;
 
             _orderBooks.Update(brokerId, symbol, orderBook);
+
+            var entity = OrderBookEntity.GenerateEntity(brokerId, orderBook.Symbol);
+            entity.OrderBook = orderBook;
+
+            _dataWriter.InsertOrReplaceAsync(entity).GetAwaiter().GetResult();
         }
 
         public IReadOnlyList<OrderBook> GetAllAsync(string brokerId, string symbol,

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OrderBooks.Common.Domain.Entities
+namespace OrderBooks.MyNoSql.OrderBookData
 {
     /// <summary>
     /// Represents an order book.

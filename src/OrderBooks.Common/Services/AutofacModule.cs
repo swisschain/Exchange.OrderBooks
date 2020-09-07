@@ -15,6 +15,10 @@ namespace OrderBooks.Common.Services
             builder.RegisterType<OrderBooksHandler>()
                 .As<IOrderBooksHandler>()
                 .SingleInstance();
+
+            builder.RegisterType<PricingService>()
+                .As<IPricingService>()
+                .SingleInstance();
         }
     }
 }

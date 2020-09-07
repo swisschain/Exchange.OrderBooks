@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using OrderBooks.Common.Domain.Entities;
 using OrderBooks.Common.Domain.Handlers;
 using OrderBooks.Common.Domain.Services;
 using OrderBooks.Common.Utils;
+using OrderBooks.MyNoSql.OrderBookData;
 
 namespace OrderBooks.Common.Services
 {
@@ -17,10 +17,12 @@ namespace OrderBooks.Common.Services
         private readonly object _sync = new object();
 
         private readonly IOrderBooksService _orderBooksService;
+        private readonly IPricingService _pricingService;
 
-        public OrderBooksHandler(IOrderBooksService orderBooksService)
+        public OrderBooksHandler(IOrderBooksService orderBooksService, IPricingService pricingService)
         {
             _orderBooksService = orderBooksService;
+            _pricingService = pricingService;
         }
 
         public void Handle(string brokerId, string symbol, bool isBuy, DateTime timestamp, IReadOnlyList<LimitOrder> limitOrders)
@@ -70,19 +72,54 @@ namespace OrderBooks.Common.Services
                               orderBookInfo.BuyLimitOrders.Max(o => o.Price);
                 }
 
-                if (isValid)
+                if (!isValid)
                 {
-                    _orderBooksService.Update(brokerId, new OrderBook
-                    {
-                        Symbol = orderBookInfo.Symbol,
-                        Timestamp = orderBookInfo.Timestamp,
-                        LimitOrders = orderBookInfo.SellLimitOrders
-                            .OrderByDescending(o => o.Price)
-                            .Union(orderBookInfo.BuyLimitOrders.OrderBy(o => o.Price))
-                            .ToList()
-                    });
+                    return;
                 }
             }
+
+            var orders = new List<LimitOrder>();
+
+            if (orderBookInfo.SellLimitOrders != null && orderBookInfo.SellLimitOrders.Any())
+            {
+                orders.AddRange(orderBookInfo.SellLimitOrders.OrderByDescending(o => o.Price));
+            }
+
+            if (orderBookInfo.BuyLimitOrders != null && orderBookInfo.BuyLimitOrders.Any())
+            {
+                orders.AddRange(orderBookInfo.BuyLimitOrders.OrderBy(o => o.Price));
+            }
+
+            _orderBooksService.Update(brokerId, new OrderBook
+            {
+                Symbol = orderBookInfo.Symbol,
+                Timestamp = orderBookInfo.Timestamp,
+                LimitOrders = orders
+            });
+        }
+
+        private void UpdateInPricingService(string brokerId, OrderBookInfo orderBookInfo)
+        {
+            decimal? ask = null;
+            decimal? bid = null;
+
+            if (orderBookInfo.SellLimitOrders != null && orderBookInfo.SellLimitOrders.Any())
+            {
+                ask = orderBookInfo.SellLimitOrders.Min(o => o.Price);
+            }
+
+            if (orderBookInfo.BuyLimitOrders != null && orderBookInfo.BuyLimitOrders.Any())
+            {
+                bid = orderBookInfo.BuyLimitOrders.Max(o => o.Price);
+            }
+
+
+            if (ask.HasValue && bid.HasValue && ask.Value <= bid.Value)
+            {
+                return;
+            }
+
+            _pricingService.Update(brokerId, orderBookInfo.Symbol, orderBookInfo.Timestamp, ask, bid);
         }
 
         private class OrderBookInfo

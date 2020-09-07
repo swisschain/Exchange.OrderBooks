@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Authors>Swisschain</Authors>
+    <Company>Swisschain</Company>
+    <Product>Swisschain.Antares.OrderBooks.MyNoSql</Product>
+    <PackageId>Swisschain.Antares.OrderBooks.MyNoSql</PackageId>
+    <Description>Client for Swisschain.Antares.OrderBooks.MyNoSql</Description>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MyNoSqlServer.DataWriter" Version="1.2.6" />
+  </ItemGroup>
+
+</Project>

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace OrderBooks.Common.Domain.Entities
+namespace OrderBooks.MyNoSql.OrderBookData
 {
     /// <summary>
     /// Represents a limit order details.
